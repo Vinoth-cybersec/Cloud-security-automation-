@@ -1,0 +1,8 @@
+Resources:
+  ConfigRule:
+    Type: 'AWS::Config::ConfigRule'
+    Properties:
+      ConfigRuleName: 'S3BucketPublicAccessCheck'
+      Source:
+        Owner: 'CUSTOM_LAMBDA'
+        SourceIdentifier: 'arn:aws:lambda:REGION:YOUR_ACCOUNT_ID:function:S3BucketPublicAccessCheck'
