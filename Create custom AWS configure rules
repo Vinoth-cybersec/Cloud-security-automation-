@@ -1,0 +1,34 @@
+import json
+import boto3
+
+def lambda_handler(event, context):
+    s3_client = boto3.client('s3')
+    rule_parameters = event['ruleParameters']
+    
+    # Parse the event from AWS Config
+    invoking_event = json.loads(event['invokingEvent'])
+    configuration_item = invoking_event['configurationItem']
+    
+    # Get S3 Bucket name
+    bucket_name = configuration_item['resourceName']
+    
+    # Check if the S3 Bucket is public
+    try:
+        bucket_acl = s3_client.get_bucket_acl(Bucket=bucket_name)
+        
+        for grant in bucket_acl['Grants']:
+            if 'AllUsers' in grant['Grantee'].get('URI', '') or 'AuthenticatedUsers' in grant['Grantee'].get('URI', ''):
+                return {
+                    'complianceType': 'NON_COMPLIANT',
+                    'annotation': f'Bucket {bucket_name} is public'
+                }
+    except Exception as e:
+        return {
+            'complianceType': 'NON_COMPLIANT',
+            'annotation': f'Error occurred while checking bucket {bucket_name}: {str(e)}'
+        }
+
+    return {
+        'complianceType': 'COMPLIANT',
+        'annotation': f'Bucket {bucket_name} is secure.'
+    }
