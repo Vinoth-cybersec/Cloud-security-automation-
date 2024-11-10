@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  ConfigRecorder:
+    Type: 'AWS::Config::ConfigurationRecorder'
+    Properties:
+      Name: 'MyConfigRecorder'
+      RoleARN: arn:aws:iam::YOUR_ACCOUNT_ID:role/aws-config-role
+      RecordingGroup:
+        AllSupported: true
+        IncludeGlobalResourceTypes: true
+
+  ConfigDeliveryChannel:
+    Type: 'AWS::Config::DeliveryChannel'
+    Properties:
+      Name: 'MyDeliveryChannel'
+      S3BucketName: 'my-config-bucket'
+
+Outputs:
+  ConfigRecorderName:
+    Value: !Ref ConfigRecorder
+  ConfigDeliveryChannelName:
+    Value: !Ref ConfigDeliveryChannel
